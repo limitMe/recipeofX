@@ -204,9 +204,9 @@ function loadWorkbook(excelFilename) {
                                 var offset2 = monthDiff(activatedDate, payDate)
 
                                 if(colNumber == startColumn){
-                                    monthlyProfit[offset1][offset2] = monthlyProfit[offset1][offset2] + parseInt(cell.value)
+                                    monthlyProfit[offset1][offset2] = monthlyProfit[offset1][offset2] + parseFloat(cell.value)
                                 } else {
-                                    monthlyProfit[offset1][offset2] = monthlyProfit[offset1][offset2] + parseInt(cell.value) - parseInt(worksheet.getCell(rowNumber,colNumber-1).value)
+                                    monthlyProfit[offset1][offset2] = monthlyProfit[offset1][offset2] + parseFloat(cell.value) - parseFloat(worksheet.getCell(rowNumber,colNumber-1).value)
                                 }
                                 
                                 var output = "现在读到第"+colNumber+"列第"+rowNumber+"行，数据是"+cell.value+
@@ -232,18 +232,30 @@ function loadWorkbook(excelFilename) {
                 }
 
                 //展示结果
+                var output = "新增用户的月份,该月总消耗,当月回收,当月ROI,+1月回收,+1月ROI,+2月回收,+2月ROI,+3月回收,+3月ROI,+4月回收,+4月ROI,+5月回收,+5月ROI,+6月回收,+6月ROI,+7月回收,+7月ROI,+8月回收,+8月ROI,+9月回收,+9月ROI,+10月回收,+10月ROI,+11月回收,+11月ROI\n"
                 for (var i = 0; i < 12; i++) {
-                    var firstline = "本月消耗总量"
-                    var secondline = "   " + monthlyCost[i].round(2)
+                    var month = (startDate.getMonth() + i + 1) % 12
+                    var firstline = month + "月消耗总量"
+                    var secondline = " " + monthlyCost[i].round(2)
+                    output = output + month + "月," + monthlyCost[i].round(2)
                     for (var j = 0; j < 12; j++) {
-                        firstline = firstline + "\t" + monthlyProfit[i][j]
-                        secondline = secondline + "\t" + (monthlyProfit[i][j]/monthlyCost[i]).round(3)
+                        firstline = firstline + "\t" + monthlyProfit[i][j].round(2)
+                        secondline = secondline + "\t" + (monthlyProfit[i][j]/monthlyCost[i]*100).round(2) + "%"
+                        output = output + "," + monthlyProfit[i][j].round(2) + "," + (monthlyProfit[i][j]/monthlyCost[i]*100).round(2) + "%"
                     }
+                    output = output + "\n"
                     if (!firstline.endsWith("\t0")) {
                         console.log(firstline)
                         console.log(secondline)
                     }
                 }
+
+                fs.writeFile("output.csv", output, function(err) {
+                    if(err) {
+                        return console.log(err);
+                    }
+                    console.log("已将上述内容写入到output.csv，请在excel中导入");
+                }); 
             }
         }
     });
