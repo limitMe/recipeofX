@@ -204,7 +204,7 @@ function loadWorkbook(excelFilename) {
 
                 for (var i = 0; i < 12; i++) {
                     if(monthlyProfit[i][0] == 0){
-                        //continue
+                        continue
                     }
                     var month = (startDate.getMonth() + i + 1)
                     var newline = month + "月"
